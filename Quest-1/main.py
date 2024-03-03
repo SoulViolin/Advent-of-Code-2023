@@ -26,7 +26,6 @@ def main():
 
         numbers = re.findall(r'\d', numbers)
         calibration = int(str(numbers[0]) + numbers[-1])
-        print(numbers, calibration)
         calibrationValues.append(calibration)
 
     total = sum(calibrationValues)
