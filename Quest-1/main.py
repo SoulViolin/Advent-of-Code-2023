@@ -19,7 +19,7 @@ def main():
     file = readFile(fileName)
 
     for el in file:
-        numbers = re.findall(r'(?:zero|one|two|three|four|five|six|seven|eight|nine|\d)', el)
+        numbers = re.findall(r'(?=(one|two|three|four|five|six|seven|eight|nine|1|2|3|4|5|6|7|8|9))', el)
         numbers = ''.join(numbers)
         for word, number in word_to_number.items():
             numbers = numbers.replace(word, number)
