@@ -7,7 +7,7 @@ def main():
     file = readFile(fileName)
 
     for el in file:
-        numbers = re.findall(r'\d+', el)
+        numbers = re.findall(r'\d', el)
         calibration = int(str(numbers[0]) + numbers[-1])
         calibrationValues.append(calibration)
 
