@@ -10,10 +10,14 @@ def main(Mred, Mgreen, Mblue):
         name, count = el.split(": ")[0].split(" ")
         games = [{item.split()[1]: int(item.split()[0]) for item in game.split(", ")} for game in el.split(": ")[1].split("; ")]
 
+        MGred = 1
+        MGgreen = 1
+        MGblue = 1
+
         for game in games:
-            MGred = Gred = game.get("red", 1)
-            MGgreen = Ggreen = game.get("green", 1)
-            MGblue = Gblue = game.get("blue", 1)
+            Gred = game.get("red", 1)
+            Ggreen = game.get("green", 1)
+            Gblue = game.get("blue", 1)
 
             if Gred <= Mred and Ggreen <= Mgreen and Gblue <= Mblue:
                 MGred = max(MGred, Gred)
