@@ -15,16 +15,19 @@ def main(Mred, Mgreen, Mblue):
         MGblue = 1
 
         for game in games:
-            Gred = game.get("red", 1)
-            Ggreen = game.get("green", 1)
-            Gblue = game.get("blue", 1)
+            Gred = game.get("red", 0)
+            Ggreen = game.get("green", 0)
+            Gblue = game.get("blue", 0)
+
+            MGred = max(MGred, Gred)
+            MGgreen = max(MGgreen, Ggreen)
+            MGblue = max(MGblue, Gblue)
 
             if Gred <= Mred and Ggreen <= Mgreen and Gblue <= Mblue:
-                MGred = max(MGred, Gred)
-                MGgreen = max(MGgreen, Ggreen)
-                MGblue = max(MGblue, Gblue)
+                pass
             else:
-                flag = False
+                # flag = False
+                pass
         
         if flag: 
             total = MGred * MGgreen * MGblue
