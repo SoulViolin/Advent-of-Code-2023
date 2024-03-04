@@ -22,12 +22,6 @@ def main(Mred, Mgreen, Mblue):
             MGred = max(MGred, Gred)
             MGgreen = max(MGgreen, Ggreen)
             MGblue = max(MGblue, Gblue)
-
-            if Gred <= Mred and Ggreen <= Mgreen and Gblue <= Mblue:
-                pass
-            else:
-                # flag = False
-                pass
         
         if flag: 
             total = MGred * MGgreen * MGblue
