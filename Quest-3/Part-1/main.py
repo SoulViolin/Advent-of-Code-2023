@@ -30,13 +30,6 @@ def findNumbers(matrix):
                 visited.add((row, c))
             else:
                 break
-        # Explore vertically
-        for r in range(row + 1, rows):
-            if matrix[r][col].isdigit() and (r, col) not in visited:
-                num.append({"digit": matrix[r][col], "coordinates": [r, col]})
-                visited.add((r, col))
-            else:
-                break
         return num
 
     for row in range(rows):
