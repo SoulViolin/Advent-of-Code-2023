@@ -31,20 +31,23 @@ def findNumbers(matrix):
 
     def explore(row, col):
         num = []
-        num.append({"digit": matrix[row][col], "coordinates": [row, col]})
         # Explore horizontally
-        for c in range(col + 1, cols):
+        for c in range(col, cols):
             if matrix[row][c].isdigit() and (row, c) not in visited:
                 num.append({"digit": matrix[row][c], "coordinates": [row, c]})
                 visited.add((row, c))
             else:
                 break
-        return num
+
+        if num != []:
+            return num
+        else:
+            return None
 
     for row in range(rows):
         for col in range(cols):
-            if matrix[row][col].isdigit() and (row, col) not in visited:
-                num = explore(row, col)
+            num = explore(row, col)
+            if num:
                 digit = [el["digit"] for el in num]
                 coordinates = [el["coordinates"] for el in num]
 
