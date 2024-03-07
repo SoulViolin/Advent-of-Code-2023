@@ -1,5 +1,3 @@
-from pprint import pprint
-
 def main(fileName):
     lines = readFile(fileName)
 
