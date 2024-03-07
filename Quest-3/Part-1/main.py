@@ -1,12 +1,14 @@
+from pprint import pprint
+
 def main(fileName):
     lines = readFile(fileName)
 
-    schemEngine = [list(line.replace("\n", "")) for line in lines]
+    schemEngine = [list(line.rstrip("\n")) for line in lines]
     symbols = set(char for line in schemEngine for char in line if char != '.' and not char.isdigit())
 
-    allNumbers = findNumbers(schemEngine, symbols)
+    allNumbers = findNumbers(schemEngine)
     trueNumbers = findSymbolsAroundNumbers(schemEngine, allNumbers, symbols)
-
+    print(len(allNumbers))
     total = sum(trueNumbers)
     print(total)
 
@@ -14,37 +16,46 @@ def readFile(name):
     with open(file=f"Quest-3/{name}", mode="r", encoding="utf-8") as f:
         return f.readlines()
 
-def findNumbers(matrix, symbols):
+def findNumbers(matrix):
+    numbers = []
     visited = set()
-    numbers = {}
+    rows = len(matrix)
+    cols = len(matrix[0])
 
-    def exploreNumber(row, col):
-        if row < 0 or col < 0 or row >= len(matrix) or col >= len(matrix[0]) or (row, col) in visited or matrix[row][col] == '.' or matrix[row][col] in symbols:
-            return []
+    def explore(row, col):
+        num = []
+        num.append({"digit": matrix[row][col], "coordinates": [row, col]})
+        # Explore horizontally
+        for c in range(col + 1, cols):
+            if matrix[row][c].isdigit() and (row, c) not in visited:
+                num.append({"digit": matrix[row][c], "coordinates": [row, c]})
+                visited.add((row, c))
+            else:
+                break
+        # Explore vertically
+        for r in range(row + 1, rows):
+            if matrix[r][col].isdigit() and (r, col) not in visited:
+                num.append({"digit": matrix[r][col], "coordinates": [r, col]})
+                visited.add((r, col))
+            else:
+                break
+        return num
 
-        visited.add((row, col))
-        number = [(row, col)]
-        directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    for row in range(rows):
+        for col in range(cols):
+            if matrix[row][col].isdigit() and (row, col) not in visited:
+                num = explore(row, col)
+                digit = [el["digit"] for el in num]
+                coordinates = [el["coordinates"] for el in num]
 
-        for dr, dc in directions:
-            newRow, newCol = row + dr, col + dc
-            number += exploreNumber(newRow, newCol)
-
-        return number
-
-    for i in range(len(matrix)):
-        for j in range(len(matrix[0])):
-            if matrix[i][j].isdigit() and (i, j) not in visited:
-                numberCoordinates = exploreNumber(i, j)
-                numKey = ''.join(matrix[i][j] for i, j in numberCoordinates)
-                numbers[numKey] = numberCoordinates
+                numbers.append([int("".join(digit)), coordinates])
 
     return numbers
 
 def findSymbolsAroundNumbers(matrix, numbers, symbols):
     results = []
 
-    for numberKey, coordinates in numbers.items():
+    for numberKey, coordinates in numbers:
         foundSymbol = False
         for coord in coordinates:
             row, col = coord
