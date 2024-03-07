@@ -48,22 +48,19 @@ def findSymbolsAroundNumbers(matrix, numbers, symbols):
     results = []
 
     for numberKey, coordinates in numbers:
-        symbolCoordinates = ()
-        foundSymbol = False
+        symbolCoordinates = None
         for coord in coordinates:
             row, col = coord
             for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
                 newRow, newCol = row + dr, col + dc
-                if (newRow, newCol) in coordinates:
-                    continue  # Skip a cell if it is part of the same number
-                if 0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols:
-                    foundSymbol = True
+                if (0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols and (newRow, newCol) not in coordinates):
                     symbolCoordinates = (newRow, newCol)
                     break
-            if foundSymbol:
+
+            if symbolCoordinates:
                 break
 
-        if foundSymbol:
+        if symbolCoordinates:
             results.append((int(numberKey), symbolCoordinates))
 
     return results

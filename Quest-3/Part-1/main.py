@@ -15,6 +15,15 @@ def readFile(name):
         return f.readlines()
 
 def findNumbers(matrix):
+    """
+    Function to find numbers in matrix
+    :param matrix: list of lists
+    :return: list of numbers and their coordinates
+
+    >>> findNumbers([["1", "2", "3"], ["4", ".", "6"], ["7", ".", "."]])
+    [[123, [[0, 0], [0, 1], [0, 2]]], [4, [[1, 0]]], [6, [[1, 2]]], [7, [[2, 0]]]]
+
+    """
     numbers = []
     visited = set()
     rows = len(matrix)
@@ -47,20 +56,19 @@ def findSymbolsAroundNumbers(matrix, numbers, symbols):
     results = []
 
     for numberKey, coordinates in numbers:
-        foundSymbol = False
+        symbolCoordinates = None
         for coord in coordinates:
             row, col = coord
             for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
                 newRow, newCol = row + dr, col + dc
-                if (newRow, newCol) in coordinates:
-                    continue  # Skip a cell if it is part of the same number
-                if 0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols:
-                    foundSymbol = True
+                if (0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols and (newRow, newCol) not in coordinates):
+                    symbolCoordinates = (newRow, newCol)
                     break
-            if foundSymbol:
+
+            if symbolCoordinates:
                 break
 
-        if foundSymbol:
+        if symbolCoordinates:
             results.append(int(numberKey))
 
     return results
