@@ -8,7 +8,7 @@ def main(fileName):
 
     allNumbers = findNumbers(schemEngine)
     trueNumbers = findSymbolsAroundNumbers(schemEngine, allNumbers, symbols)
-    print(len(allNumbers))
+
     total = sum(trueNumbers)
     print(total)
 
