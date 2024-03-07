@@ -1,5 +1,3 @@
-from pprint import pprint
-
 def main(fileName):
     lines = readFile(fileName)
 
@@ -10,7 +8,7 @@ def main(fileName):
     trueNumbers = findSymbolsAroundNumbers(schemEngine, allNumbers, symbols)
     gearRatios = findGearRatios(trueNumbers)
 
-    total = sum(trueNumbers)
+    total = sum(gearRatios)
     print(total)
 
 def readFile(name):
@@ -57,7 +55,7 @@ def findSymbolsAroundNumbers(matrix, numbers, symbols):
     results = []
 
     for numberKey, coordinates in numbers:
-        symbol_coordinates = ()
+        symbolCoordinates = ()
         foundSymbol = False
         for coord in coordinates:
             row, col = coord
@@ -67,7 +65,7 @@ def findSymbolsAroundNumbers(matrix, numbers, symbols):
                     continue  # Skip a cell if it is part of the same number
                 if 0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols:
                     foundSymbol = True
-                    symbol_coordinates = (newRow, newCol)
+                    symbolCoordinates = (newRow, newCol)
                     break
             if foundSymbol:
                 break
@@ -77,8 +75,26 @@ def findSymbolsAroundNumbers(matrix, numbers, symbols):
 
     return results
 
-findGearRatios():
+def findGearRatios(data):
+    result = []
+    coordinates = {}
 
+    # Creating a dictionary where the keys will be coordinates and the values will be an array of values
+    for value, coords in data:
+        if coords in coordinates:
+            coordinates[coords].append(value)
+        else:
+            coordinates[coords] = [value]
+
+    # Iterate over the coordinates and multiply the elements of the array, if there are more than one
+    for coords, values in coordinates.items():
+        if len(values) > 1:
+            product = 1
+            for val in values:
+                product *= val
+            result.append(product)
+
+    return result
 
 if __name__ == '__main__':
     fileName = "input.txt"
