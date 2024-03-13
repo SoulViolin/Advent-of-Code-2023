@@ -8,11 +8,10 @@ def main():
 
     for card in cards:
         win = calculateWin(card["winNumbers"], card["cardNumbers"])
-        if win != 0:
-            for i in range(card["cardNumber"], card["cardNumber"] + win):
-                cards.append(cards[i])
+        for i in range(card["cardNumber"], card["cardNumber"] + win):
+            cards[i]["count"] += card["count"]
 
-    totalWin = len(cards)
+    totalWin = sum([card["count"] for card in cards])
     print(totalWin)
 
 def getcards(lines):
@@ -24,7 +23,7 @@ def getcards(lines):
         winNumbers = re.findall(r'\d+', card.split(" | ")[0])
         cardNumbers = re.findall(r'\d+', card.split(" | ")[1])
 
-        cards.append({"cardNumber": cardNumber, "winNumbers": winNumbers, "cardNumbers": cardNumbers})
+        cards.append({"cardNumber": cardNumber, "count": 1, "winNumbers": winNumbers, "cardNumbers": cardNumbers})
     return cards
 
 def calculateWin(winNumbers, cardNumbers):
