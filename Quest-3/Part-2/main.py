@@ -1,11 +1,9 @@
 def main(fileName):
     lines = readFile(fileName)
+    symbols = ["*"]
 
-    schemEngine = [list(line.rstrip("\n")) for line in lines]
-    symbols = set("*")
-
-    allNumbers = findNumbers(schemEngine)
-    trueNumbers = findSymbolsAroundNumbers(schemEngine, allNumbers, symbols)
+    allNumbers, allSymbols = findNumbersSymbols(lines, symbols)
+    trueNumbers = findSymbolsAroundNumbers(allNumbers, allSymbols)
     gearRatios = findGearRatios(trueNumbers)
 
     total = sum(gearRatios)
@@ -15,55 +13,37 @@ def readFile(name):
     with open(file=f"Quest-3/{name}", mode="r", encoding="utf-8") as f:
         return f.readlines()
 
-def findNumbers(matrix):
+def findNumbersSymbols(lines, symbols):
     numbers = []
-    visited = set()
-    rows = len(matrix)
-    cols = len(matrix[0])
+    allSymbols = []
+    for i, line in enumerate(lines):
+        number = ""
+        coordinates = []
+        for j, char in enumerate(line):
+            if char.isdigit():
+                number += char
+                coordinates.append([i, j])
+            elif number:
+                numbers.append({"digit": int(number), "coordinates": coordinates})
+                number = ""
+                coordinates = []
+            elif char in symbols:
+                allSymbols.append([i, j])
+        if number:
+            numbers.append({"digit": int(number), "coordinates": coordinates})
+    return numbers, allSymbols
 
-    def explore(row, col):
-        num = []
-        num.append({"digit": matrix[row][col], "coordinates": [row, col]})
-        # Explore horizontally
-        for c in range(col + 1, cols):
-            if matrix[row][c].isdigit() and (row, c) not in visited:
-                num.append({"digit": matrix[row][c], "coordinates": [row, c]})
-                visited.add((row, c))
-            else:
-                break
-        return num
-
-    for row in range(rows):
-        for col in range(cols):
-            if matrix[row][col].isdigit() and (row, col) not in visited:
-                num = explore(row, col)
-                digit = [el["digit"] for el in num]
-                coordinates = [el["coordinates"] for el in num]
-
-                numbers.append([int("".join(digit)), coordinates])
-
-    return numbers
-
-def findSymbolsAroundNumbers(matrix, numbers, symbols):
-    results = []
-
-    for numberKey, coordinates in numbers:
-        symbolCoordinates = None
-        for coord in coordinates:
-            row, col = coord
-            for dr, dc in [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1)]:
-                newRow, newCol = row + dr, col + dc
-                if (0 <= newRow < len(matrix) and 0 <= newCol < len(matrix[0]) and matrix[newRow][newCol] in symbols and (newRow, newCol) not in coordinates):
-                    symbolCoordinates = (newRow, newCol)
+def findSymbolsAroundNumbers(numbers, symbols):
+    trueNumbers = []
+    for number in numbers:
+        for i, j in number["coordinates"]:
+            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
+            for dx, dy in directions:
+                if [i + dx, j + dy] in symbols and [number["digit"], (i + dx, j + dy)] not in trueNumbers:
+                    trueNumbers.append([number["digit"], (i + dx, j + dy)])
                     break
 
-            if symbolCoordinates:
-                break
-
-        if symbolCoordinates:
-            results.append((int(numberKey), symbolCoordinates))
-
-    return results
+    return trueNumbers
 
 def findGearRatios(data):
     result = []
