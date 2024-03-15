@@ -10,7 +10,6 @@ def main(lines):
     # ['1']
     # """
     gearRatio = []
-    allNumbers = []
     for y, line in enumerate(lines):
         for x, el in enumerate(line):
             if el == "*":
@@ -25,7 +24,7 @@ def main(lines):
                     numbers += findNumbers(lines[y+1])
 
                 touchedNumbers = filterNumbers(numbers, x)
-                allNumbers += touchedNumbers
+
                 if len(touchedNumbers) == 2:
                     ratio = int(touchedNumbers[0]) * int(touchedNumbers[1])
                     gearRatio.append(ratio)
@@ -85,7 +84,7 @@ if __name__ == '__main__':
     try:
         fileName = sys.argv[1]
     except:
-        fileName = "input.txt"
+        fileName = "Quest-3/input.txt"
     lines = readFile(fileName)
     print(main(lines))
 
