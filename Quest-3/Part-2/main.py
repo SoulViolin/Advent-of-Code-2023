@@ -1,71 +1,89 @@
-def main(fileName):
-    lines = readFile(fileName)
-    symbols = ["*"]
+import sys
 
-    allNumbers, allSymbols = findNumbersSymbols(lines, symbols)
-    trueNumbers = findSymbolsAroundNumbers(allNumbers, allSymbols)
-    gearRatios = findGearRatios(trueNumbers)
+def main(lines):
+    # """
+    # >>> main(["1*1", "111", "111"])
+    # ['1', '1', '1', '1', 1]
 
-    total = sum(gearRatios)
-    print(total)
+    # >>> main([".*1", "...", "..."])
+    # ['1']
+    # """
+    gearRatio = []
+    for y, line in enumerate(lines):
+        for x, el in enumerate(line):
+            if el == "*":
+                numbers = []
+
+                if y-1 >= 0:
+                    numbers += findNumbers(lines[y-1])
+
+                numbers += findNumbers(line)
+
+                if y+1 < len(lines):
+                    numbers += findNumbers(lines[y+1])
+
+                touchedNumbers = filterNumbers(numbers, y)
+
+                if len(touchedNumbers) == 2:
+                    ratio = int(touchedNumbers[0]) * int(touchedNumbers[1])
+                    gearRatio.append(ratio)
+
+    total = sum(gearRatio)
+    return total
+
+def findNumbers(line):
+    # """
+    # >>> findNumbers("231*.1")
+    # [('231', 0)]
+
+    # >>> findNumbers("1*.")
+    # [('1', 0)]
+
+    # >>> findNumbers(".*.")
+    # []
+    # """
+
+    allNumbers = []
+    number = ""
+
+    for dx, el in enumerate(line):
+        if el.isdigit():
+            number += el
+        elif number:
+            allNumbers.append((number, dx - len(number)))
+            number = ""
+    if number:
+        allNumbers.append((number, dx - len(number)))
+
+    return allNumbers
+
+def filterNumbers(numbers, x):
+    # """
+    # >>> filterNumbers([("231", 0), ("43", 3)], 1)
+    # ['231']
+
+    # >>> filterNumbers([("231", 0), ("43", 3)], 2)
+    # ['231', '43']
+    # """
+    touchedNumbers = []
+
+    for number, dx in numbers:
+        allX = range(dx, dx + len(number))
+        if x-1 in allX or x in allX or x+1 in allX:
+            touchedNumbers.append(number)
+
+    return touchedNumbers
+
 
 def readFile(name):
-    with open(file=f"Quest-3/{name}", mode="r", encoding="utf-8") as f:
+    with open(name, mode="r", encoding="utf-8") as f:
         return f.readlines()
 
-def findNumbersSymbols(lines, symbols):
-    numbers = []
-    allSymbols = []
-    for i, line in enumerate(lines):
-        number = ""
-        coordinates = []
-        for j, char in enumerate(line):
-            if char.isdigit():
-                number += char
-                coordinates.append([i, j])
-            elif number:
-                numbers.append({"digit": int(number), "coordinates": coordinates})
-                number = ""
-                coordinates = []
-            elif char in symbols:
-                allSymbols.append([i, j])
-        if number:
-            numbers.append({"digit": int(number), "coordinates": coordinates})
-    return numbers, allSymbols
-
-def findSymbolsAroundNumbers(numbers, symbols):
-    trueNumbers = []
-    for number in numbers:
-        for i, j in number["coordinates"]:
-            directions = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1)]
-            for dx, dy in directions:
-                if [i + dx, j + dy] in symbols and [number["digit"], (i + dx, j + dy)] not in trueNumbers:
-                    trueNumbers.append([number["digit"], (i + dx, j + dy)])
-                    break
-
-    return trueNumbers
-
-def findGearRatios(data):
-    result = []
-    coordinates = {}
-
-    # Creating a dictionary where the keys will be coordinates and the values will be an array of values
-    for value, coords in data:
-        if coords in coordinates:
-            coordinates[coords].append(value)
-        else:
-            coordinates[coords] = [value]
-
-    # Iterate over the coordinates and multiply the elements of the array, if there are more than one
-    for coords, values in coordinates.items():
-        if len(values) > 1:
-            product = 1
-            for val in values:
-                product *= val
-            result.append(product)
-
-    return result
-
 if __name__ == '__main__':
-    fileName = "input.txt"
-    main(fileName)
+    try:
+        fileName = sys.argv[1]
+    except:
+        fileName = "input.txt"
+    lines = readFile(fileName)
+    print(main(lines))
+
