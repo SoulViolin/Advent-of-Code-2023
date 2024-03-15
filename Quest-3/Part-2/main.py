@@ -9,6 +9,8 @@ def main(lines):
     # >>> main([".*1", "...", "..."])
     # ['1']
     # """
+    numbersAll = [findNumbers(line) for line in lines]
+
     gearRatio = []
     for y, line in enumerate(lines):
         for x, el in enumerate(line):
@@ -16,12 +18,12 @@ def main(lines):
                 numbers = []
 
                 if y-1 >= 0:
-                    numbers += findNumbers(lines[y-1])
+                    numbers += numbersAll[y-1]
 
-                numbers += findNumbers(line)
+                numbers += numbersAll[y]
 
                 if y+1 < len(lines):
-                    numbers += findNumbers(lines[y+1])
+                    numbers += numbersAll[y+1]
 
                 touchedNumbers = filterNumbers(numbers, x)
 
