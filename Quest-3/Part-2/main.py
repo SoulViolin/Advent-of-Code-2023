@@ -69,12 +69,26 @@ def filterNumbers(numbers, x):
     touchedNumbers = []
 
     for number, dx in numbers:
-        allX = range(dx, dx + len(number))
-        if x-1 in allX or x in allX or x+1 in allX:
+        if overlap(dx, dx + len(number) - 1, x - 1, x + 1):
             touchedNumbers.append(int(number))
 
     return touchedNumbers
 
+def overlap(a, b, c, d):
+    """
+    >>> overlap(0, 4, 4, 6)
+    True
+
+    >>> overlap(0, 4, 0, 4)
+    True
+
+    >>> overlap(0, 4, 5, 7)
+    False
+    """
+#     0123456
+#         c*d
+#     a===b
+    return a <= c <= b or c <= a <= d
 
 def readFile(name):
     with open(name, mode="r", encoding="utf-8") as f:
