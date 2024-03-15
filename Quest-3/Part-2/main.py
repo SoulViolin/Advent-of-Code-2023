@@ -1,4 +1,5 @@
 import sys
+import math
 
 def main(lines):
     # """
@@ -9,6 +10,7 @@ def main(lines):
     # ['1']
     # """
     gearRatio = []
+    allNumbers = []
     for y, line in enumerate(lines):
         for x, el in enumerate(line):
             if el == "*":
@@ -22,8 +24,8 @@ def main(lines):
                 if y+1 < len(lines):
                     numbers += findNumbers(lines[y+1])
 
-                touchedNumbers = filterNumbers(numbers, y)
-
+                touchedNumbers = filterNumbers(numbers, x)
+                allNumbers += touchedNumbers
                 if len(touchedNumbers) == 2:
                     ratio = int(touchedNumbers[0]) * int(touchedNumbers[1])
                     gearRatio.append(ratio)
@@ -70,7 +72,7 @@ def filterNumbers(numbers, x):
     for number, dx in numbers:
         allX = range(dx, dx + len(number))
         if x-1 in allX or x in allX or x+1 in allX:
-            touchedNumbers.append(number)
+            touchedNumbers.append(int(number))
 
     return touchedNumbers
 
