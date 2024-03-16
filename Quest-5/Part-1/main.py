@@ -5,6 +5,9 @@ def main(fileName):
     lines = readFile(fileName)
     data = getData(lines)
     processedData = processData(data)
+    print(processedData)
+
+    # unificationData = unificationData(processedData)
 
     # pprint(data)
 
@@ -42,7 +45,7 @@ def processData(data):
 
 def handler(value):
     """
-    >>> handler("fields", [[50, 98, 2], [50, 98, 2]])
+    >>> handler([[50, 98, 2], [50, 98, 2]])
     [[98, 50], [99, 51], [98, 50], [99, 51]]
     """
     values = []
@@ -53,6 +56,20 @@ def handler(value):
         values += [list(g) for g in zip(seeds, fields)]
 
     return values
+
+# def unificationData(data):
+#     newData = {}
+
+#     for key, value in data.items():
+#         if key == "seeds":
+#             newData[key] = value
+#         else:
+#             # value = joiningData(value)
+#             pass
+
+#     return newData
+
+# def joiningData(value):
 
 def readFile(name):
     with open(file=name, mode="r", encoding="utf-8") as f:
