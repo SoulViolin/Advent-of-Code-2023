@@ -1,38 +1,66 @@
+import sys
 from pprint import pprint
 
 def main(fileName):
     lines = readFile(fileName)
-    getValues(lines)
+    data = getData(lines)
+    processedData = processData(data)
 
-def getValues(lines):
-    key_value_pairs = {}
-    key = None
-    value = ''
+    # pprint(data)
+
+def getData(lines):
+    data = {}
+    values = []
+
     for line in lines:
-        line = line.strip()
-        if not line:
-            if key is not None:
-                key_value_pairs[key] = value.strip()
-                key = None
-                value = ''
-        elif ':' in line:
-            parts = line.split(':', 1)
-            if key is not None:
-                key_value_pairs[key] = value.strip()
-            key = parts[0].strip()
-            value += parts[1].strip() + ' '
-        elif key is not None:
-            value += line + ' '
-    if key is not None:
-        key_value_pairs[key] = value.strip()
+        if "seeds" in line:
+            key, value = line.split(": ")
+            values += [int(el) for el in value.rstrip("\n").split()]
+            data[key] = values
+        else:
+            if ":" in line:
+                key = line.rsplit(":\n")[0]
+                values = []
+            elif "\n" != line:
+                values.append([int(el) for el in line.rstrip("\n").split()])
+            else:
+                data[key] = values
 
-    pprint(key_value_pairs)
+    return data
 
+def processData(data):
+    newData = {}
+
+    for key, value in data.items():
+        if key == "seeds":
+            newData[key] = value
+        else:
+            processedData = handler(value)
+            newData[key] = processedData
+
+    return newData
+
+def handler(value):
+    """
+    >>> handler("fields", [[50, 98, 2], [50, 98, 2]])
+    [[98, 50], [99, 51], [98, 50], [99, 51]]
+    """
+    values = []
+
+    for el in value:
+        fields = [i for i in range(el[0], el[0] + el[2])]
+        seeds = [i for i in range(el[1], el[1] + el[2])]
+        values += [list(g) for g in zip(seeds, fields)]
+
+    return values
 
 def readFile(name):
-    with open(file=f"Quest-5/{name}", mode="r", encoding="utf-8") as f:
+    with open(file=name, mode="r", encoding="utf-8") as f:
         return f.readlines()
 
 if __name__ == '__main__':
-    fileName = "input.txt"
+    try:
+        fileName = sys.argv[1]
+    except:
+        fileName = "Quest-5/input.txt"
     main(fileName)
