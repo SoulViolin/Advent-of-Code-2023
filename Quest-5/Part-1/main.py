@@ -1,79 +1,95 @@
 import sys
+from dataclasses import dataclass
 from pprint import pprint
 
+@dataclass
+class Mapping:
+    dest: int
+    source: int
+    length: int
+
 def main(fileName):
-    lines = readFile(fileName)
-    data = getData(lines)
-    processedData = processData(data)
-    print(processedData)
+    paras = read_file(fileName).rstrip("\n").split("\n\n")
+    seeds = get_seeds(paras[0])
+    maps = get_maps(paras[1:])
 
-    # unificationData = unificationData(processedData)
+    min_location = min(get_locations(seeds, maps))
 
-    # pprint(data)
+    print(min_location)
 
-def getData(lines):
-    data = {}
-    values = []
+def parse_line(line):
+    dest, source, length = map(int, line.split())
+    return Mapping(dest, source, length)
 
-    for line in lines:
-        if "seeds" in line:
-            key, value = line.split(": ")
-            values += [int(el) for el in value.rstrip("\n").split()]
-            data[key] = values
-        else:
-            if ":" in line:
-                key = line.rsplit(":\n")[0]
-                values = []
-            elif "\n" != line:
-                values.append([int(el) for el in line.rstrip("\n").split()])
-            else:
-                data[key] = values
+def get_locations(seeds, maps):
+    return [process_seed(seed, maps) for seed in seeds]
 
-    return data
-
-def processData(data):
-    newData = {}
-
-    for key, value in data.items():
-        if key == "seeds":
-            newData[key] = value
-        else:
-            processedData = handler(value)
-            newData[key] = processedData
-
-    return newData
-
-def handler(value):
+def process_seed(seed, dict_maps):
     """
-    >>> handler([[50, 98, 2], [50, 98, 2]])
-    [[98, 50], [99, 51], [98, 50], [99, 51]]
+    # return location
+    >>> process_seed(99, {'seed-to-soil map': [Mapping(dest=50, source=98, length=2), Mapping(dest=522, source=560, length=48)]})
+    51
+    >>> process_seed(99, {'seed-to-soil map': [Mapping(dest=50, source=98, length=2)], 'fertilizer-to-water': [Mapping(dest=0, source=15, length=37)]})
+    36
     """
-    values = []
+    result = seed
 
-    for el in value:
-        fields = [i for i in range(el[0], el[0] + el[2])]
-        seeds = [i for i in range(el[1], el[1] + el[2])]
-        values += [list(g) for g in zip(seeds, fields)]
+    for _, maps in dict_maps.items():
+        result = apply_maps(maps, result)
 
-    return values
+    return result
 
-# def unificationData(data):
-#     newData = {}
+def get_seeds(para):
+    _, value = para.split(": ")
+    seeds = [int(el) for el in value.split()]
 
-#     for key, value in data.items():
-#         if key == "seeds":
-#             newData[key] = value
-#         else:
-#             # value = joiningData(value)
-#             pass
+    return seeds
 
-#     return newData
+def get_maps(paras):
+    """
+    >>> get_maps(['seed-to-soil map:\\n50 98 2\\n52 50 48', 'map:\\n50 98 2\\n52 50 48'])
+    {'seed-to-soil map': [Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)], 'map': [Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)]}
+    """
+    maps = {}
 
-# def joiningData(value):
+    for para in paras:
+        lines = para.split("\n")
+        key = lines[0].rsplit(":")[0]
+        values = []
+        for line in lines[1:]:
+            values.append(parse_line(line))
+        maps[key] = values
 
-def readFile(name):
+    return maps
+
+def apply_maps(maps, seed):
+    """
+    >>> apply_maps([Mapping(5, 7, 2)], 8)
+    6
+    >>> apply_maps([Mapping(5, 7, 2)], 1)
+    1
+    """
+    for map in maps:
+        result = apply_map(map, seed)
+        if result is not None:
+            return result
+
+    return seed
+
+def apply_map(map, seed):
+    """
+    >>> apply_map(Mapping(5, 7, 2), 8)
+    6
+    >>> apply_map(Mapping(5, 7, 2), 1) is None
+    True
+    """
+    if  map.source <= seed < map.source + map.length:
+        shift = seed - map.source
+        return map.dest + shift
+
+def read_file(name):
     with open(file=name, mode="r", encoding="utf-8") as f:
-        return f.readlines()
+        return f.read()
 
 if __name__ == '__main__':
     try:
