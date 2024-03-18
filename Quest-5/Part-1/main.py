@@ -1,6 +1,5 @@
 import sys
 from dataclasses import dataclass
-from pprint import pprint
 
 @dataclass
 class Mapping:
@@ -17,27 +16,9 @@ def main(fileName):
 
     print(min_location)
 
-def parse_line(line):
-    dest, source, length = map(int, line.split())
-    return Mapping(dest, source, length)
-
-def get_locations(seeds, maps):
-    return [process_seed(seed, maps) for seed in seeds]
-
-def process_seed(seed, dict_maps):
-    """
-    # return location
-    >>> process_seed(99, {'seed-to-soil map': [Mapping(dest=50, source=98, length=2), Mapping(dest=522, source=560, length=48)]})
-    51
-    >>> process_seed(99, {'seed-to-soil map': [Mapping(dest=50, source=98, length=2)], 'fertilizer-to-water': [Mapping(dest=0, source=15, length=37)]})
-    36
-    """
-    result = seed
-
-    for _, maps in dict_maps.items():
-        result = apply_maps(maps, result)
-
-    return result
+def read_file(name):
+    with open(file=name, mode="r", encoding="utf-8") as f:
+        return f.read()
 
 def get_seeds(para):
     _, value = para.split(": ")
@@ -48,19 +29,40 @@ def get_seeds(para):
 def get_maps(paras):
     """
     >>> get_maps(['seed-to-soil map:\\n50 98 2\\n52 50 48', 'map:\\n50 98 2\\n52 50 48'])
-    {'seed-to-soil map': [Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)], 'map': [Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)]}
+    [[Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)], [Mapping(dest=50, source=98, length=2), Mapping(dest=52, source=50, length=48)]]
     """
-    maps = {}
+    maps = []
 
     for para in paras:
         lines = para.split("\n")
-        key = lines[0].rsplit(":")[0]
         values = []
         for line in lines[1:]:
             values.append(parse_line(line))
-        maps[key] = values
+        maps.append(values)
 
     return maps
+
+def parse_line(line):
+    dest, source, length = map(int, line.split())
+    return Mapping(dest, source, length)
+
+def get_locations(seeds, maps):
+    return [process_seed(seed, maps) for seed in seeds]
+
+def process_seed(seed, maps_list):
+    """
+    # return location
+    >>> process_seed(99, [[Mapping(dest=50, source=98, length=2), Mapping(dest=522, source=560, length=48)]])
+    51
+    >>> process_seed(99, [[Mapping(dest=50, source=98, length=2)], [Mapping(dest=0, source=15, length=37)]])
+    36
+    """
+    result = seed
+
+    for maps in maps_list:
+        result = apply_maps(maps, result)
+
+    return result
 
 def apply_maps(maps, seed):
     """
@@ -86,10 +88,6 @@ def apply_map(map, seed):
     if  map.source <= seed < map.source + map.length:
         shift = seed - map.source
         return map.dest + shift
-
-def read_file(name):
-    with open(file=name, mode="r", encoding="utf-8") as f:
-        return f.read()
 
 if __name__ == '__main__':
     try:
