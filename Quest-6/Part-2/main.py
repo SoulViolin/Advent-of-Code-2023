@@ -1,5 +1,6 @@
 import sys
 import math
+from functools import reduce
 
 def main(file_name):
     input = read_file(file_name)
@@ -19,14 +20,10 @@ def get_data(input):
     return times, records
 
 def wins_count(times, records):
-    item = None
-    for time, record in zip(times, records):
-        if item is None:
-            item = win_count(time, record)
-        else:
-            item = item * win_count(time, record)
+    items = [win_count(time, record) for time, record in zip(times, records)]
+    total_win = reduce((lambda x, y: x * y), items)
 
-    return item
+    return total_win
 
 def win_count(time, record):
     """
