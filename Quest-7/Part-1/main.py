@@ -22,19 +22,19 @@ def get_hands(lines):
 def get_type(hand):
     """
     >>> get_type("K2345")
-    1
+    [1, 1, 1, 1, 1]
     >>> get_type("KK345")
-    2
+    [2, 1, 1, 1]
     >>> get_type("KK677")
-    3
+    [2, 2, 1]
     >>> get_type("J3222")
-    4
+    [3, 1, 1]
     >>> get_type("KK777")
-    5
+    [3, 2]
     >>> get_type("J2222")
-    6
+    [4, 1]
     >>> get_type("22222")
-    7
+    [5]
     """
 
     value_count = {}
@@ -45,27 +45,7 @@ def get_type(hand):
         else:
             value_count[value] = 1
 
-    if len(value_count) == 1:
-        # Five of a kind
-        return 7
-    elif len(value_count) == 2:
-        # Full house or Four of a kind
-        if 2 in value_count.values():
-            return 5
-        else:
-            return 6
-    elif len(value_count) == 3:
-        # Three of a kind or Two pair
-        if 3 in value_count.values():
-            return 4
-        else:
-            return 3
-    elif len(value_count) == 4:
-        # One pair
-        return 2
-    else:
-        # High card
-        return 1
+    return sorted(list(value_count.values()), reverse=True)
 
 if __name__ == '__main__':
     try:
