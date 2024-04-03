@@ -4,6 +4,7 @@ def main(file_name):
     lines = read_file(file_name)
     start = find_start(lines)
     route = find_route(lines, start)
+    print(route)
 
 def read_file(name):
     with open(file=name, mode="r", encoding="utf-8") as f:
@@ -12,85 +13,49 @@ def read_file(name):
 def find_start(lines):
     for y in range(len(lines)):
         for x in range(len(lines[y])):
-            if lines[y][x] == 'S':  # Начальная точка
-                return (x, y)
+            if lines[y][x] == 'S':
+                return (y, x)
 
 def find_route(lines, start):
     """
     >>> find_route(['..F7.\n', '.FJ|.\n', 'SJ.L7\n', '|F--J\n', 'LJ...\n'], (0, 2))
     """
     visited = set()
-    route = []
-    current_x, current_y = start
+    visited.add(start)
+    starts = get_starts(start, lines)
 
-    while ((current_x, current_y) != start and len(route) < 2) is False:
-        directions = get_directions(current_y, current_x, lines)
-        for dir in directions:
-            checked_y = current_y + dir[0]
-            checked_x = current_x + dir[1]
-            if 0 <= checked_y < len(lines) and 0 <= checked_x < len(lines[y]):
-                el = lines[checked_y][checked_x]
-                # Up
-                if dir == (-1, 0):
-                    print(f"Up: {el}", checked_y, checked_x, dir)
-                    if el in "|7F" and (checked_y, checked_x) not in visited:
-                        visited.add((checked_y, checked_x))
-                        print("True")
-                # Down
-                if dir == (1, 0):
-                    print(f"Down: {el}", checked_y, checked_x, dir)
-                    if el in "|LJ" and (checked_y, checked_x) not in visited:
-                        visited.add((checked_y, checked_x))
-                        print("True")
-                # Left
-                if dir == (0, -1):
-                    print(f"Left: {el}", checked_y, checked_x, dir)
-                    if el in "-LF" and (checked_y, checked_x) not in visited:
-                        visited.add((checked_y, checked_x))
-                        print("True")
-                # Right
-                if dir == (0, 1):
-                    print(f"Right: {el}", checked_y, checked_x, dir)
-                    if el in "-J7" and (checked_y, checked_x) not in visited:
-                        visited.add((checked_y, checked_x))
-                        print("True")
+    while starts[0] != starts[1]:
+        visited.add(starts[0])
+        visited.add(starts[1])
+        starts = [get_direction(pos, lines, visited) for pos in starts]
 
-                print(visited)
-                input()
+    return (len(visited) + 1) // 2
 
-def get_directions(y, x, lines):
-    directions = []
-    if lines[y][x] == "S":
-        return [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    # if x > 0 and lines[y][x-1] in '-J7':  # Движение вверх
-    #     directions.append((-1, 0))
-    # if x < len(lines[y]) - 1 and lines[y][x+1] in '-LF':  # Движение вниз
-    #     directions.append((1, 0))
-    # if y > 0 and lines[y-1][x] in '|LJ':  # Движение влево
-    #     directions.append((0, -1))
-    # if y < len(lines) - 1 and lines[y+1][x] in '|7F':  # Движение вправо
-    #     directions.append((0, 1))
-    # return directions
+def shifted_table(pos):
+    table = [((-1, 0), "|7F"), ((1, 0), "|LJ"), ((0, -1), "-LF"), ((0, 1), "-J7")]
+
+    y, x = pos
+    return [((y + dy, x + dx), pipes) for (dy, dx), pipes in table]
+
+def shifted_y_x(pos):
+    table = [((1, 0), "|7F"), ((-1, 0), "|LJ"), ((0, 1), "-LF"), ((0, -1), "-J7")]
+
+    y, x = pos
+    return [((y + dy, x + dx), pipes) for (dy, dx), pipes in table]
+
+def get_starts(start, lines):
+    return [(y, x) for (y, x), pipes in shifted_table(start) if lines[y][x] in pipes]
+
+def get_direction(start, lines, visited):
+    y, x = start
+    el = lines[y][x]
+    for pos, pipes in shifted_y_x(start):
+        if el in pipes and pos not in visited:
+            return pos
 
 if __name__ == '__main__':
     try:
         file_name = sys.argv[1]
     except:
-        file_name = "Quest-10/test.txt"
+        file_name = "Quest-10/input.txt"
     main(file_name)
-
-
-
-# # Функция для определения возможных направлений из текущей позиции
-# def possible_directions(x, y, lines):
-#     directions = []
-#     if x > 0 and route_array[y][x-1] in '-J7':  # Движение вверх
-#         directions.append((-1, 0))
-#     if x < len(route_array[y]) - 1 and route_array[y][x+1] in '-LF':  # Движение вниз
-#         directions.append((1, 0))
-#     if y > 0 and route_array[y-1][x] in '|LJ':  # Движение влево
-#         directions.append((0, -1))
-#     if y < len(route_array) - 1 and route_array[y+1][x] in '|7F':  # Движение вправо
-#         directions.append((0, 1))
-#     return directions
-
