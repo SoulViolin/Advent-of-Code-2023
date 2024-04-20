@@ -2,13 +2,13 @@ import sys
 
 def main(file_name: str) -> None:
     lines = read_file(file_name)
-    platforms = [gravity_simulation(grid) for grid in lines]
-    result = sum([calculate_total_load(platform) for platform in platforms])
-    print("Суммарный total load для камней 'O':", result)
+    grid = gravity_simulation(lines)
+    result = calculate_total_load(grid)
+    print(result)
 
-def read_file(name: str) -> list[list[str]]:
+def read_file(name: str) -> list[str]:
     with open(file=name, mode="r", encoding="utf-8") as f:
-        return [el.splitlines() for el in f.read().split("\n\n")]
+        return f.read().splitlines()
 
 def gravity_simulation(grid):
     rows = len(grid)
@@ -32,13 +32,15 @@ def can_move_up(x, y, grid):
     return x - 1 >= 0 and (grid[x - 1][y] == '.' or grid[x - 1][y] == 'O')
 
 def calculate_total_load(platform):
-    rows = platform.strip().split('\n')[::-1]
     total_load = 0
+    rows = len(platform)
 
-    for row_idx, row in enumerate(rows):
-        for char in row:
-            if char == 'O':
-                load = row_idx + 1
+    for row_index in range(rows - 1, -1, -1):
+        row = platform[row_index]
+
+        for col_index in range(len(row)):
+            if row[col_index] == 'O':
+                load = rows - row_index
                 total_load += load
 
     return total_load
@@ -47,5 +49,5 @@ if __name__ == '__main__':
     try:
         file_name = sys.argv[1]
     except:
-        file_name = "test-1.txt"
+        file_name = "Quest-14/test-1.txt"
     main(file_name)
