@@ -49,5 +49,5 @@ if __name__ == '__main__':
     try:
         file_name = sys.argv[1]
     except:
-        file_name = "Quest-14/test-1.txt"
+        file_name = "Quest-14/input.txt"
     main(file_name)

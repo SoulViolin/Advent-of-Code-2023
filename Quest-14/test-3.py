@@ -1,16 +1,5 @@
 import sys
 
-def main(file_name: str) -> None:
-    lines = read_file(file_name)
-    platform = rotate(rotate(rotate(lines)))
-    platform = cycle_until_stable(platform)
-    load_count = count_load(platform)
-    print(load_count)
-
-def read_file(name: str) -> list[str]:
-    with open(file=name, mode="r", encoding="utf-8") as f:
-        return f.read().splitlines()
-
 def tilt(platform):
     return [tilt_row(row) for row in platform]
 
@@ -59,7 +48,7 @@ def cycle_until_stable(platform):
     loop_start = seen[snap]
     loop_end = cnt
     iters = cheat(loop_start, loop_end, 1000000000)
-    for _ in range(iters):
+    for i in range(iters):
         platform = cycle(platform)
     return platform
 
@@ -67,8 +56,11 @@ def cheat(loop_start, loop_end, desired):
     return (desired - loop_end) % (loop_end - loop_start)
 
 if __name__ == '__main__':
-    try:
-        file_name = sys.argv[1]
-    except:
-        file_name = "Quest-14/input.txt"
-    main(file_name)
+    with open(sys.argv[1], 'r') as f:
+        content = f.read().splitlines()
+        platform = [list(line) for line in content]
+
+    platform = rotate(rotate(rotate(platform)))  # Equivalent to initial rotations in JS code
+    platform = cycle_until_stable(platform)
+    load_count = count_load(platform)
+    print(load_count)
